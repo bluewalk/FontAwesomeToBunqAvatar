@@ -16,10 +16,11 @@ Options:
                                as a prefix.
       --size=VALUE           Size of image (default: 420)
       --showIcons            Show available icons and exit
-      -h, -?, --help             Displays this help text
+      --allBunqColors        Generate an icon for every bunq color
+      -h, -?, --help         Displays this help text
 
 Example:
-FontAwesomeToBunqAvatar --htmlcolor=FFAA11 plane
+FontAwesomeToBunqAvatar --htmlcolor=FFAA11 fa-plane
 ```
 # Colors
 Below are the colors bunq uses for their accounts in the app
