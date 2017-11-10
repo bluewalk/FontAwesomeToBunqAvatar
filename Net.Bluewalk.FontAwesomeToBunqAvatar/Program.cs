@@ -26,6 +26,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using NDesk.Options;
 
@@ -39,20 +40,22 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
             string filename = null;
             var help = false;
             var showIcons = false;
+            var allBunqColors = false;
             var size = 420;
 
             var font = "fontawesome-webfont.ttf";
 
-            var p = new OptionSet
+            var options = new OptionSet
                 {
                     {"font=", "Font file to use (default: fontawesome-webfont.ttf)", v => font = v},
-                    {"htmlcolor=", "Color (HTML color code or name, default: black)", v => htmlcolor = v},
+                    {"htmlcolor=", "Color (HTML color code, default: #000000)", v => htmlcolor = v},
                     {"filename=", "The name of the output file. If all files are exported, it is used as a prefix.", v => filename = v},
                     {"size=", "Size of image (default: 420)", (int v) => size = v},
                     {"showIcons", "Show available icons and exit", v => showIcons = v != null},
+                    {"allBunqColors", "Generate an icon for every bunq color", v => allBunqColors = v != null},
                     {"h|?|help", "Displays this help text", v => help = v != null},
                 };
-            var icons = p.Parse(args);
+            var icons = options.Parse(args);
 
             Console.Error.WriteLine("FontAwesomeToBunqAvatar v{0}", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
             Console.Error.WriteLine();
@@ -66,7 +69,7 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
                 Console.WriteLine();
                 Console.Error.WriteLine("Options: ");
 
-                p.WriteOptionDescriptions(Console.Error);
+                options.WriteOptionDescriptions(Console.Error);
 
                 Console.WriteLine();
                 Console.WriteLine("Example:");
@@ -109,15 +112,25 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
                 isSingle = true;
             }
 
+            var colors = new Dictionary<string, Color>();
+            colors.Add(htmlcolor, colorColor);
+
+            if (allBunqColors)
+                BunqColors.Values.ToList().ForEach(p => colors.Add(p.Key, p.Value));
+
             foreach (var icon in iconsToExport)
             {
                 if (Icons.Values.TryGetValue(icon, out var iconChar))
                 {
-                    var iconFilename = isSingle ? (filename ?? icon + ".png") : filename + icon + ".png";
+                    colors.ToList().ForEach(p =>
+                    {
+                        var iconFilename = isSingle ? (filename ?? icon + $"-{p.Key}.png") : filename + icon + $"-{p.Key}.png";
 
-                    Console.Error.WriteLine("Exporting icon \"{0}\" as {1} ({2}x{2} pixels)", icon, iconFilename, size);
+                        Console.Error.WriteLine("Exporting icon \"{0}\" as {1} ({2}x{2} pixels)", icon, iconFilename,
+                            size);
 
-                    ExportIcon(fontFamily, size, iconChar, icon, iconFilename, colorColor);
+                        ExportIcon(fontFamily, size, iconChar, icon, iconFilename, p.Value, p.Key);
+                    });
                 }
                 else
                 {
@@ -167,7 +180,7 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
             }
         }
 
-        private static void ExportIcon(FontFamily fontFamily, int size, char icon, string name, string filename, Color color)
+        private static void ExportIcon(FontFamily fontFamily, int size, char icon, string name, string filename, Color color, string htmlColor)
         {
             var iconString = new string(icon, 1);
             const double multiplier = .6;
