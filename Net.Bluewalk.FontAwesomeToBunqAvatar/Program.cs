@@ -197,10 +197,10 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
 
                     g.FillRectangle(new SolidBrush(color), 0, 0, size, size);
 
-                    using (var font = FindFont(g, fontFamily, iconString, iconSize))
+                    using (var font = new Font(fontFamily, iconSize * .5f))//FindFont(g, fontFamily, iconString, iconSize))
                     {
                         var iconSize2 = g.MeasureString(iconString, font);
-                        g.DrawString(iconString, font, new SolidBrush(Color.White), size / 2 - iconSize2.Width / 2, size / 2 - iconSize2.Height / 2 + iconSize / 10);
+                        g.DrawString(iconString, font, new SolidBrush(Color.White), (size - iconSize2.Width) / 2, (size - iconSize2.Height) / 2);
                     }
                     
                 }
@@ -217,38 +217,38 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
         }
 
-        private static Font FindFont(Graphics g, FontFamily fontFamily, string icon, int size)
-        {
-            float closest = size*2;
-            float closestSize = size;
+        //private static Font FindFont(Graphics g, FontFamily fontFamily, string icon, int size)
+        //{
+        //    float closest = size*2;
+        //    float closestSize = size;
 
-            for (var i = size*.5f; i <= size; i += 1f)
-            {
-                using (var font = new Font(fontFamily, i))
-                {
-                    var result = g.MeasureString(icon, font);
+        //    for (var i = size*.5f; i <= size; i += 1f)
+        //    {
+        //        using (var font = new Font(fontFamily, i))
+        //        {
+        //            var result = g.MeasureString(icon, font);
 
-                    var dX = size - result.Width;
-                    var dY = size - result.Height;
+        //            var dX = size - result.Width;
+        //            var dY = size - result.Height;
 
-                    if (dX < 0 || dY < 0)
-                        break;
+        //            if (dX < 0 || dY < 0)
+        //                break;
 
-                    var minDiff = Math.Min(dX, dY);
+        //            var minDiff = Math.Min(dX, dY);
 
-                    if (minDiff < closest)
-                    {
-                        closest = minDiff;
-                        closestSize = i;
-                    }
-                    else if (minDiff > closest)
-                    {
-                        break;
-                    }
-                }
-            }
+        //            if (minDiff < closest)
+        //            {
+        //                closest = minDiff;
+        //                closestSize = i;
+        //            }
+        //            else if (minDiff > closest)
+        //            {
+        //                break;
+        //            }
+        //        }
+        //    }
 
-            return new Font(fontFamily, closestSize);
-        }
+        //    return new Font(fontFamily, closestSize);
+        //}
     }
 }
