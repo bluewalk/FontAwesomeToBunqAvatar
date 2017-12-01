@@ -79,22 +79,14 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
             }
             
             var iconlib = Icons.FontAwesome;
+
             if (font.Contains("glyphicons"))
-            {
-                if (font.Contains("social"))
-                    iconlib = Icons.GlyphIconsProSocial;
-                else if (font.Contains("filetypes"))
-                    iconlib = Icons.GlyphIconsProFileTypes;
-                else if (font.Contains("halflings"))
-                    iconlib = Icons.GlyphIconsProHalflings;
-                else
-                    iconlib = Icons.GlyphIconsPro;
-            }
+                iconlib = Icons.GlyphIconsPro;
 
             if (showIcons)
             {
-                Console.WriteLine("Currently icons till Font-Awesome version 4.7.0 ad GlyphIconsPro per 01-12-2017 are supported.");
-                Console.WriteLine("See http://fontawesome.io/cheatsheet/ or https://linghucong.js.org/WowUI/icon_glyph_pro.html for all available icons");
+                Console.WriteLine("Currently icons till Font-Awesome version 4.7.0 and GlyphIconsPro 1.9.2  are supported.");
+                Console.WriteLine("See http://fontawesome.io/cheatsheet/ for all available icons");
 
                 var txtIcons = $"Available icons in {font}{Environment.NewLine}";
                 foreach (var icon in iconlib)
