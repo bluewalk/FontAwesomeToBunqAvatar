@@ -49,7 +49,7 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
                 {
                     {"font=", "Font file to use (default: fontawesome-webfont.ttf)", v => font = v},
                     {"htmlcolor=", "Color (HTML color code, default: #000000)", v => htmlcolor = v},
-                    {"filename=", "The name of the output file. If all files are exported, it is used as a prefix.", v => filename = v},
+                    {"filename=", "The name of the output file. If all files are exported, it is used as a prefix", v => filename = v},
                     {"size=", "Size of image (default: 420)", (int v) => size = v},
                     {"showIcons", "Show available icons and exit", v => showIcons = v != null},
                     {"allBunqColors", "Generate an icon for every bunq color", v => allBunqColors = v != null},
@@ -77,11 +77,33 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
                 Environment.ExitCode = 1;
                 return;
             }
+            
+            var iconlib = Icons.FontAwesome;
+            if (font.Contains("glyphicons"))
+            {
+                if (font.Contains("social"))
+                    iconlib = Icons.GlyphIconsProSocial;
+                else if (font.Contains("filetypes"))
+                    iconlib = Icons.GlyphIconsProFileTypes;
+                else if (font.Contains("halflings"))
+                    iconlib = Icons.GlyphIconsProHalflings;
+                else
+                    iconlib = Icons.GlyphIconsPro;
+            }
 
             if (showIcons)
             {
-                Console.WriteLine("Currently icons till version 4.7.0 are supported.");
-                Console.WriteLine("See http://fontawesome.io/cheatsheet/ for all available icons");
+                Console.WriteLine("Currently icons till Font-Awesome version 4.7.0 ad GlyphIconsPro per 01-12-2017 are supported.");
+                Console.WriteLine("See http://fontawesome.io/cheatsheet/ or https://linghucong.js.org/WowUI/icon_glyph_pro.html for all available icons");
+
+                var txtIcons = $"Available icons in {font}{Environment.NewLine}";
+                foreach (var icon in iconlib)
+                    txtIcons += $" {icon.Key}{Environment.NewLine}";
+
+                File.WriteAllText("icons.txt", txtIcons);
+
+                Console.WriteLine();
+                Console.WriteLine("A list of icons has been saved as icons.txt");
 
                 return;
             }
@@ -105,7 +127,7 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
             var isSingle = false;
             if (icons.Count == 1 && "ALL".Equals(icons[0], StringComparison.OrdinalIgnoreCase))
             {
-                iconsToExport = Icons.Values.Keys;
+                iconsToExport = Icons.FontAwesome.Keys;
             }
             else if (icons.Count == 1)
             {
@@ -120,7 +142,7 @@ namespace Net.Bluewalk.FontAwesomeToBunqAvatar
 
             foreach (var icon in iconsToExport)
             {
-                if (Icons.Values.TryGetValue(icon, out var iconChar))
+                if (iconlib.TryGetValue(icon, out var iconChar))
                 {
                     colors.ToList().ForEach(p =>
                     {
